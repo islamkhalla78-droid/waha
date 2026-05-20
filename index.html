@@ -482,6 +482,36 @@
   .user-dropdown a:hover { background: var(--surface2); color: var(--white); }
   .user-dropdown .user-email { color: var(--gold); font-size: 12px; padding: 8px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 4px; }
 
+  /* CHECKOUT MODAL */
+  .checkout-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 300;
+    opacity: 0; pointer-events: none; transition: opacity .3s;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .checkout-overlay.open { opacity: 1; pointer-events: all; }
+  .checkout-box {
+    background: var(--surface); border-radius: 20px;
+    width: 100%; max-width: 500px;
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 40px; position: relative;
+    max-height: 90vh; overflow-y: auto;
+    transform: scale(.95); transition: transform .3s;
+  }
+  .checkout-overlay.open .checkout-box { transform: scale(1); }
+  .checkout-title { font-family: var(--font-display); font-size: 24px; margin-bottom: 8px; }
+  .checkout-subtitle { color: var(--gray); font-size: 14px; margin-bottom: 28px; }
+  .checkout-summary { background: var(--surface2); border-radius: var(--radius); padding: 16px; margin-bottom: 24px; }
+  .checkout-summary-title { font-size: 12px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  .checkout-summary-item { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; color: var(--gray); }
+  .checkout-summary-total { display: flex; justify-content: space-between; font-size: 16px; font-weight: 600; color: var(--gold); border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; margin-top: 8px; }
+  .auth-field select {
+    width: 100%; background: var(--surface2); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius); padding: 12px 16px; color: var(--white);
+    font-size: 14px; font-family: inherit; outline: none; transition: border-color .2s; appearance: none;
+  }
+  .auth-field select:focus { border-color: var(--gold); }
+  .auth-field select option { background: var(--surface2); color: var(--white); }
+
   /* ANIMATIONS */
   @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -652,6 +682,42 @@
       <div class="auth-field"><label>Password</label><input type="password" id="regPassword" placeholder="Min 6 characters"></div>
       <button class="auth-btn" onclick="signUp()">Create Account</button>
     </div>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="checkout-overlay" id="checkoutOverlay">
+  <div class="checkout-box">
+    <button class="auth-close" onclick="closeCheckout()">×</button>
+    <div class="checkout-title">Complete Your Order</div>
+    <div class="checkout-subtitle">Fill in your delivery details</div>
+    <div class="checkout-summary" id="checkoutSummary"></div>
+    <div id="checkoutError" class="auth-error"></div>
+    <div class="auth-field"><label>Full Name</label><input type="text" id="coName" placeholder="Your full name"></div>
+    <div class="auth-field"><label>Phone Number</label><input type="tel" id="coPhone" placeholder="06xxxxxxxx"></div>
+    <div class="auth-field">
+      <label>Wilaya</label>
+      <select id="coWilaya">
+        <option value="">Select your wilaya...</option>
+        <option>Adrar</option><option>Chlef</option><option>Laghouat</option><option>Oum El Bouaghi</option>
+        <option>Batna</option><option>Béjaïa</option><option>Biskra</option><option>Béchar</option>
+        <option>Blida</option><option>Bouira</option><option>Tamanrasset</option><option>Tébessa</option>
+        <option>Tlemcen</option><option>Tiaret</option><option>Tizi Ouzou</option><option>Alger</option>
+        <option>Djelfa</option><option>Jijel</option><option>Sétif</option><option>Saïda</option>
+        <option>Skikda</option><option>Sidi Bel Abbès</option><option>Annaba</option><option>Guelma</option>
+        <option>Constantine</option><option>Médéa</option><option>Mostaganem</option><option>M'Sila</option>
+        <option>Mascara</option><option>Ouargla</option><option>Oran</option><option>El Bayadh</option>
+        <option>Illizi</option><option>Bordj Bou Arréridj</option><option>Boumerdès</option><option>El Tarf</option>
+        <option>Tindouf</option><option>Tissemsilt</option><option>El Oued</option><option>Khenchela</option>
+        <option>Souk Ahras</option><option>Tipaza</option><option>Mila</option><option>Aïn Defla</option>
+        <option>Naâma</option><option>Aïn Témouchent</option><option>Ghardaïa</option><option>Relizane</option>
+        <option>Timimoun</option><option>Bordj Badji Mokhtar</option><option>Ouled Djellal</option>
+        <option>Béni Abbès</option><option>In Salah</option><option>In Guezzam</option>
+        <option>Touggourt</option><option>Djanet</option><option>El M'Ghair</option><option>El Meniaa</option>
+      </select>
+    </div>
+    <div class="auth-field"><label>Detailed Address</label><input type="text" id="coAddress" placeholder="Street, neighborhood, building..."></div>
+    <button class="auth-btn" onclick="submitOrder()">Place Order 🛍️</button>
   </div>
 </div>
 
@@ -939,9 +1005,61 @@ function toggleCart() {
 
 function checkout() {
   if (!cart.length) { showToast('Your cart is empty!'); return; }
-  showToast('🎉 Order placed! We will contact you soon.');
-  cart = []; saveCart(); renderCart();
+  if (!currentUser) { toggleCart(); openAuth(); showToast('Please sign in to place an order.'); return; }
+  openCheckout();
+}
+
+function openCheckout() {
+  const total = cart.reduce((a, c) => a + c.price * c.qty, 0);
+  const summary = document.getElementById('checkoutSummary');
+  summary.innerHTML = `
+    <div class="checkout-summary-title">Order Summary</div>
+    ${cart.map(c => `<div class="checkout-summary-item"><span>${c.name} × ${c.qty}</span><span>${(c.price*c.qty).toLocaleString()} DZD</span></div>`).join('')}
+    <div class="checkout-summary-total"><span>Total</span><span>${total.toLocaleString()} DZD</span></div>`;
+  document.getElementById('checkoutOverlay').classList.add('open');
   toggleCart();
+}
+
+function closeCheckout() {
+  document.getElementById('checkoutOverlay').classList.remove('open');
+}
+
+async function submitOrder() {
+  const name = document.getElementById('coName').value.trim();
+  const phone = document.getElementById('coPhone').value.trim();
+  const wilaya = document.getElementById('coWilaya').value;
+  const address = document.getElementById('coAddress').value.trim();
+  const errEl = document.getElementById('checkoutError');
+
+  if (!name || !phone || !wilaya || !address) {
+    errEl.textContent = 'Please fill all fields.'; errEl.classList.add('show'); return;
+  }
+  errEl.classList.remove('show');
+
+  const total = cart.reduce((a, c) => a + c.price * c.qty, 0);
+  const items = JSON.stringify(cart.map(c => ({ name: c.name, qty: c.qty, price: c.price })));
+
+  const btn = document.querySelector('#checkoutOverlay .auth-btn');
+  btn.disabled = true; btn.textContent = 'Placing order...';
+
+  const { error } = await db.from('orders').insert({
+    user_id: currentUser.id,
+    full_name: name,
+    phone,
+    wilaya,
+    address,
+    items,
+    total,
+    status: 'pending'
+  });
+
+  btn.disabled = false; btn.textContent = 'Place Order 🛍️';
+
+  if (error) { errEl.textContent = 'Error placing order. Please try again.'; errEl.classList.add('show'); return; }
+
+  closeCheckout();
+  cart = []; saveCart(); renderCart();
+  showToast('🎉 Order placed successfully! We will contact you soon.');
 }
 
 // ─── MODAL ──────────────────────────────────────────────────
