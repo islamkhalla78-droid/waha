@@ -471,7 +471,7 @@
       <div class="stat-label">Products</div>
     </div>
     <div class="stat">
-      <div class="stat-num">48</div>
+      <div class="stat-num">58</div>
       <div class="stat-label">Wilayas Delivered</div>
     </div>
     <div class="stat">
@@ -523,7 +523,7 @@
 <footer>
   <div>
     <div class="footer-logo">Waha</div>
-    <p class="footer-desc">Your trusted online marketplace in Algeria. Quality products, fast delivery across all 48 wilayas.</p>
+    <p class="footer-desc">Your trusted online marketplace in Algeria. Quality products, fast delivery across all 58 wilayas.</p>
   </div>
   <div class="footer-col">
     <h4>Shop</h4>
@@ -612,18 +612,9 @@ async function loadProducts() {
 }
 
 function showDemoProducts() {
-  allProducts = [
-    { id:1, name:'Wireless Earbuds', name_ar:'سماعات لاسلكية', description:'Premium sound quality with 24h battery life.', description_ar:'جودة صوت ممتازة مع بطارية 24 ساعة.', price:4500, category:'Electronics', image_url:'', emoji:'🎧' },
-    { id:2, name:'Leather Jacket', name_ar:'جاكيت جلدي', description:'Classic style, genuine leather, available in all sizes.', description_ar:'أسلوب كلاسيكي، جلد حقيقي، متوفر بجميع المقاسات.', price:12000, category:'Clothing', image_url:'', emoji:'🧥' },
-    { id:3, name:'Smart Watch', name_ar:'ساعة ذكية', description:'Track fitness, calls, and notifications.', description_ar:'تتبع اللياقة والمكالمات والإشعارات.', price:8500, category:'Electronics', image_url:'', emoji:'⌚' },
-    { id:4, name:'Honey — Local', name_ar:'عسل محلي', description:'Pure Algerian mountain honey. 500g jar.', description_ar:'عسل جبلي جزائري خالص. جرة 500 غرام.', price:1200, category:'Food', image_url:'', emoji:'🍯' },
-    { id:5, name:'Running Shoes', name_ar:'حذاء رياضي', description:'Lightweight and breathable. Perfect for daily runs.', description_ar:'خفيف وقابل للتنفس. مثالي للركض اليومي.', price:6800, category:'Sports', image_url:'', emoji:'👟' },
-    { id:6, name:'Desk Lamp', name_ar:'مصباح مكتبي', description:'LED lamp with 3 brightness levels, USB charging port.', description_ar:'مصباح LED بثلاثة مستويات إضاءة ومنفذ USB.', price:2200, category:'Home', image_url:'', emoji:'💡' },
-    { id:7, name:'Skincare Set', name_ar:'مجموعة العناية بالبشرة', description:'Natural ingredients, moisturizer + serum + toner.', description_ar:'مكونات طبيعية، مرطب + سيروم + تونر.', price:3500, category:'Beauty', image_url:'', emoji:'🧴' },
-    { id:8, name:'Arabic Novel', name_ar:'رواية عربية', description:'Bestselling Algerian fiction. Award-winning author.', description_ar:'رواية جزائرية الأكثر مبيعاً. مؤلف حائز على جوائز.', price:900, category:'Books', image_url:'', emoji:'📖' },
-  ];
+  allProducts = [];
   renderProducts(allProducts);
-  animateStatNumber('statProducts', allProducts.length);
+  animateStatNumber('statProducts', 0);
 }
 
 // ─── RENDER PRODUCTS ────────────────────────────────────────
